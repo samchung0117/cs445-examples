@@ -30,3 +30,26 @@ def get_student_details(Student_name):
             return 'Record found' + Student_name + 'age is ' + str(name['age']), 200
     except KeyError:
         return 'Record Not Found', 404
+
+@app.route('/students', methods=['PUT'])
+def put_student_details():
+    try:
+        data = request.json
+        dict_json = json.loads(json.dumps(data))
+        database[dict_json['name']] = dict_json['age']
+        return 'Success', 200
+    except Exception as e:
+        print('Error during saving object: ' + str(e))
+        return 'Failed', 400
+
+@app.route('/students/<student_name>', methods=['DELETE'])
+def delete_student_details(student_name):
+    try:
+        name = database[student_name]
+        database.pop(student_name)
+        return 'Record deleted successfully', 200
+    except KeyError:
+        return 'Record not found', 404
+    except Exception as e:
+        print("Error while removing record: {}".format(e))
+        return 'Error while removing record', 400

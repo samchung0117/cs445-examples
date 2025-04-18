@@ -1,0 +1,32 @@
+from flask import Flask
+from flask import request
+import json
+
+database = {}
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return "Hello World!"
+
+@app.route('/students', methods=['POST'])
+def post_student_details():
+    try:
+        data = request.json
+        dict_json = json.loads(json.dumps(data))
+        database[dict_json["name"]] = dict_json["age"]
+        return 'Success', 200
+    except Exception as e:
+        print('Error during saving object', e)
+        return 'Failed', 400
+    
+@app.route('/students/<student_name>')
+def get_student_details(Student_name):
+    try:
+        name = database[Student_name]
+        if name == None:
+            return 'Record not found', 404
+        else:
+            return 'Record found' + Student_name + 'age is ' + str(name['age']), 200
+    except KeyError:
+        return 'Record Not Found', 404
